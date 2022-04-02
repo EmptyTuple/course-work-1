@@ -151,7 +151,7 @@ if __name__ == '__main__':
 
     YD_API_URL = 'https://cloud-api.yandex.net/v1/disk/resources'
 
-    YD_token = 'AQAAAABewBoFAADLW-SEUZ3sE07CsV2Xgo43Fdo'
+    YD_token = ''
 
     vka = VKPhotosDownloader(VK_API_URL, VK_token, VK_api_version)
     vka.get_photos(VK_user_id, album, photos_quantity)
