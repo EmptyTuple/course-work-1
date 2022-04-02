@@ -10,7 +10,6 @@ class APIClient(object):
     """
     Базовый класс для всех API-клиентов.
     """
-
     def __init__(self, url, token, version=''):
         self.url = url
         self.token = token
@@ -45,7 +44,6 @@ def _check_errors(res):
         }
         sys.exit(f'Обнаружены ошибки:\n{error_dict}')
     return res
-
 
 class VKPhotosDownloader(APIClient):
     """
@@ -99,26 +97,21 @@ class VKPhotosDownloader(APIClient):
             with open('TMP/' + item['file_name'], 'wb') as f:
                 f.write(img_file)
 
-
 class YaDiskUpLoader(APIClient):
     """
     Класс для работы с API Yandex Disk
     """
-
     def __init__(self, url, token, version=''):
         super().__init__(url, token, version)
         self.headers={"Authorization": self.token}
 
-    def load_to_ydisk(self, folder):
-        
+    def load_to_ydisk(self, folder):        
         res = requests.get(self.url, headers=self.headers)
-        print('Создание папки на яндекс диске.')
+        print('Создание папки на Yandex Disk.')
         res = requests.put(self.url, headers=self.headers, params={"path": folder})
     
         for files in os.listdir('TMP'):
             headers = {"Authorization": self.token}
-            
-        
             params = {"path": folder + '/' + files, 'overwrite':True}
             resp = requests.get(self.url + '/upload', headers=headers, params=params)
 
@@ -129,7 +122,6 @@ class YaDiskUpLoader(APIClient):
                     print('Файл успешно загружен.')
                 else:
                     print('Файл не загружен.')
-
 
 if __name__ == '__main__':
     # Переменная folder_name задаваемая при старте программы будет использоваться при создании имен папок для хранения фотографий
@@ -151,7 +143,7 @@ if __name__ == '__main__':
 
     YD_API_URL = 'https://cloud-api.yandex.net/v1/disk/resources'
 
-    YD_token = ''
+    YD_token = 'AQAAAABewBoFAADLW-SEUZ3sE07CsV2Xgo43Fdo'
 
     vka = VKPhotosDownloader(VK_API_URL, VK_token, VK_api_version)
     vka.get_photos(VK_user_id, album, photos_quantity)
