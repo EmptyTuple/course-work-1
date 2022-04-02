@@ -142,61 +142,6 @@ class YaDiskUpLoader(APIClient):
                 else:
                     print('Файл не загружен.')
 
-            # res = requests.get(self.url, headers=self.headers, params={"path": files})
-            # print(res.json())
-            
-            # print('Загрузка файла:', files)
-            # response = requests.post(res.json()['href'], data=open('TMP/' + files, 'rb'))
-           
-            # if response.status_code == 201:
-            #     print('Файл успешно загружен.')
-            # else:
-            #     print('Файл не загружен.')
-    
-    
-    
-    
-    # def upload(self):
-    #     """Загрузка файлов из папки TMP на Яндекс Диск"""
-    #     # Сохранение файлов в папку
-    #     headers = self.headers
-    #     # file_list = []
-    #     for file_path in os.listdir('TMP'):
-    #         if file_path.endswith(".jpg"):
-    #             d = {}
-    #             d['file_name'] = file_path
-    #             d['size'] = int(os.path.getsize(self.folder + file_path))
-    #             # file_list.append(d)
-
-    #         def myfunc(file):
-    #             return int(os.path.getsize(self.folder + file))
-    #         if d['file_name'] in sorted(os.listdir(self.directory), key=myfunc, reverse=True)[:quantity]:
-    #             params = {"path": self.folder + file_path}
-    #             resp = requests.get(self.api_url + '/upload', headers=headers, params=params)
-
-    #             with open(self.folder + file_path, 'rb') as f:
-    #                 print('Загрузка файла:', file_path)
-    #                 response = requests.post(resp.json()['href'], files={"file": f})
-    #                 if response.status_code == 201:
-    #                     print('Файл успешно загружен.')
-    #                 else:
-    #                     print('Файл не загружен.')
-
-    #             with open(self.folder + 'file_list.json', 'a') as f:
-    #                 json.dump(d, f)
-
-    #         print('Загрузка файла json с названиями и размерами файлов')
-    #         params = {"path": self.folder + 'file_list.json'}
-    #         resp = requests.get(self.api_url + '/upload', headers=headers, params=params)
-
-    #         with open(self.folder + 'file_list.json', 'rb') as f:
-    #             response = requests.post(resp.json()['href'], files={"file": f})
-    #             if response.status_code == 201:
-    #                 print('Файл успешно загружен.')
-    #             else:
-    #                 print('Файл не загружен.')
-
-    #         print('Загрузка выполнена.')
 
 
 if __name__ == '__main__':
@@ -220,17 +165,10 @@ if __name__ == '__main__':
 
     YD_API_URL = 'https://cloud-api.yandex.net/v1/disk/resources'
 
-    YD_token = 'AQAAAABewBoFAADLW-SEUZ3sE07CsV2Xgo43Fdo'
+    YD_token = ''
 
     vka = VKPhotosDownloader(VK_API_URL, VK_token, VK_api_version)
     vka.get_photos(VK_user_id, album, photos_quantity)
     yd = YaDiskUpLoader(YD_API_URL, YD_token)
     yd.create_folder(folder_name)
     yd._get_upload_link(folder_name)
-
-
-
-
-
-
-
