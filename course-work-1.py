@@ -1,4 +1,3 @@
-from json5 import dumps
 import requests
 from datetime import datetime
 import json
@@ -110,38 +109,29 @@ class YaDiskUpLoader(APIClient):
         super().__init__(url, token, version)
         self.headers={"Authorization": self.token}
 
-    def create_folder(self, folder):
+    def load_to_ydisk(self, folder):
         
         res = requests.get(self.url, headers=self.headers)
         print('Создание папки на яндекс диске.')
         res = requests.put(self.url, headers=self.headers, params={"path": folder})
         
-        # print(res.json()['href'])
-
-        
-    def _get_upload_link(self, folder):
-        params = {"path": folder, "overwrite": "true"}
-        headers = self.headers
-        response = requests.get(url=self.url, headers=headers, params=params)
-
-        print(response.json())
-
-        return response.json()
-        
+        aa = res.json()['href']
+        print(aa)
     
-    def upload_files(self, folder):
         for files in os.listdir('TMP'):
-
-            resp = self._get_upload_link(folder)
+            headers = {"Authorization": self.token}
             
+        
+            params = {"path": folder + '/' + files, 'overwrite':True}
+            resp = requests.get(self.url + '/upload', headers=headers, params=params)
+
             with open('TMP/' + files, 'rb') as f:
                 print('Загрузка файла:', files)
-                response = requests.put(resp['href'], files={"file": f})
+                response = requests.post(resp.json()['href'], files={"file": f})
                 if response.status_code == 201:
                     print('Файл успешно загружен.')
                 else:
                     print('Файл не загружен.')
-
 
 
 if __name__ == '__main__':
@@ -149,7 +139,6 @@ if __name__ == '__main__':
     # Будут использованы в том числе секунды, что позволит избежать конфликтов с одинаковыми названиями папок и написания кода
     # для проверки имен.
     folder_name = datetime.now().strftime("%d-%m-%y_%H-%M-%S")
-    
 
     VK_token = '958eb5d439726565e9333aa30e50e0f937ee432e927f0dbd541c541887d919a7c56f95c04217915c32008'
     Yandex_token = ''
@@ -165,10 +154,10 @@ if __name__ == '__main__':
 
     YD_API_URL = 'https://cloud-api.yandex.net/v1/disk/resources'
 
-    YD_token = ''
+    YD_token = 'AQAAAABewBoFAADLW-SEUZ3sE07CsV2Xgo43Fdo'
 
     vka = VKPhotosDownloader(VK_API_URL, VK_token, VK_api_version)
     vka.get_photos(VK_user_id, album, photos_quantity)
     yd = YaDiskUpLoader(YD_API_URL, YD_token)
-    yd.create_folder(folder_name)
-    yd._get_upload_link(folder_name)
+    yd.load_to_ydisk(folder_name)
+   
