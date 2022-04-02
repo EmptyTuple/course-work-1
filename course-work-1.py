@@ -114,9 +114,6 @@ class YaDiskUpLoader(APIClient):
         res = requests.get(self.url, headers=self.headers)
         print('Создание папки на яндекс диске.')
         res = requests.put(self.url, headers=self.headers, params={"path": folder})
-        
-        aa = res.json()['href']
-        print(aa)
     
         for files in os.listdir('TMP'):
             headers = {"Authorization": self.token}
