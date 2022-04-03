@@ -7,20 +7,20 @@ from tqdm import tqdm
 from time import sleep
 
 class APIClient(object):
-    """
+    '''
     Базовый класс для всех API-клиентов.
-    """
+    '''
     def __init__(self, url: str, token: str, version=''):
         self.url = url
         self.token = token
         self.version = version
 
 def _check_errors(res):
-    """
+    '''
     Функция обрабатывает ошибки, записывает ошибки в словарь,
     печатает словарь, завершает программу.
     Если ошибок нет возвращает json.
-    """
+    '''
     try:
         res.raise_for_status()
         res = res.json()
@@ -46,7 +46,8 @@ def _check_errors(res):
     return res
 
 def clear_tmp():
-    '''Функция проверяет есть ли локальная директория с именем VK_TMP,
+    '''
+    Функция проверяет есть ли локальная директория с именем VK_TMP,
     для временнего хранения скачанных файлов. Если директории нет, создает ее,
     если директория существует - удаляет ее содержимое.
     '''
@@ -60,8 +61,9 @@ def clear_tmp():
                 os.rmdir(os.path.join(root, name))
                 
 def delete_tmp_dir():
-    '''Функция удаляет временные файлы и папки, создаваемые в каталоге программы
-       при копировании фотографий
+    '''
+    Функция удаляет временные файлы и папки, создаваемые в каталоге программы
+    при копировании фотографий
     '''
     print('Удаляю временные файлы и директории.')
     for file in os.listdir('VK_TMP'):
@@ -70,10 +72,10 @@ def delete_tmp_dir():
     print('Временные файлы и директории удалены.')
 
 class VKPhotosDownloader(APIClient):
-    """
+    '''
     Класс для работы с API Вконтакте.
     Создает директорию TMP на локальном диске, сохраняет в нее фото и json-файл.
-    """
+    '''
 
     def __init__(self, url: str, token: str, version=''):
         super().__init__(url, token, version)
@@ -122,9 +124,9 @@ class VKPhotosDownloader(APIClient):
                 f.write(img_file)
 
 class YaDiskUpLoader(APIClient):
-    """
+    '''
     Класс для работы с API Yandex Disk
-    """
+    '''
     def __init__(self, url: str, token: str, version=''):
         super().__init__(url, token, version)
         self.headers={"Authorization": self.token}
@@ -150,7 +152,8 @@ class YaDiskUpLoader(APIClient):
             sleep(.1)
 
 def is_integer(variable: str) -> int:
-    '''Функция проверяет является ли объект ввода целым положительным числом
+    '''
+    Функция проверяет является ли объект ввода целым положительным числом
     '''
     try:
         int(variable)
