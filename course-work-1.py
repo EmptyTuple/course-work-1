@@ -10,7 +10,7 @@ class APIClient(object):
     """
     Базовый класс для всех API-клиентов.
     """
-    def __init__(self, url, token, version=''):
+    def __init__(self, url: str, token: str, version=''):
         self.url = url
         self.token = token
         self.version = version
@@ -45,13 +45,37 @@ def _check_errors(res):
         sys.exit(f'Обнаружены ошибки:\n{error_dict}')
     return res
 
+def clear_tmp():
+    '''Функция проверяет есть ли директория с именем VK_TMP,
+    для временнего хранения скачанных файлов. Если директории нет, создает ее,
+    если директория существует - удаляет ее содержимое.
+    '''
+    if not os.path.isdir("VK_TMP"):
+        os.mkdir('VK_TMP')
+    else:
+        for root, dirs, files in os.walk('VK_TMP', topdown=False):
+            for filename in files:
+                os.remove(os.path.join(root, filename))
+            for name in dirs:
+                os.rmdir(os.path.join(root, name))
+                
+def delete_tmp_dir():
+    '''Функция удаляет временные файлы и папки, создаваемые в каталоге программы
+       при копировании фотографий
+    '''
+    print('Удаляю временные файлы и директории.')
+    for file in os.listdir('VK_TMP'):
+        os.remove('VK_TMP/' + file)
+    os.rmdir('VK_TMP')
+    print('Временные файлы и директории удалены.')
+
 class VKPhotosDownloader(APIClient):
     """
     Класс для работы с API Вконтакте.
     Создает директорию TMP на локальном диске, сохраняет в нее фото и json-файл.
     """
 
-    def __init__(self, url, token, version=''):
+    def __init__(self, url: str, token: str, version=''):
         super().__init__(url, token, version)
         self.params = {
             'access_token': token,
@@ -71,7 +95,7 @@ class VKPhotosDownloader(APIClient):
         res = _check_errors(res)
         
         photos_list = []
-        os.mkdir('TMP')
+        clear_tmp()
 
         for value in res['response']['items']:
             # Определение самой большой фотографии в items: сортировка по высоте и ширине
@@ -88,34 +112,34 @@ class VKPhotosDownloader(APIClient):
             file_info = {'file name': item['file_name'], 'size': item['type']}
             info.append(file_info)           
         
-        with open('TMP/info.json', 'w') as f:
+        with open('VK_TMP/info.json', 'w') as f:
             json.dump(info, f)
 
         for item in photos_list:
             img_file = requests.get(item['url']).content
             
-            with open('TMP/' + item['file_name'], 'wb') as f:
+            with open('VK_TMP/' + item['file_name'], 'wb') as f:
                 f.write(img_file)
 
 class YaDiskUpLoader(APIClient):
     """
     Класс для работы с API Yandex Disk
     """
-    def __init__(self, url, token, version=''):
+    def __init__(self, url: str, token: str, version=''):
         super().__init__(url, token, version)
         self.headers={"Authorization": self.token}
 
-    def load_to_ydisk(self, folder):        
+    def load_to_ydisk(self, folder: str):        
         res = requests.get(self.url, headers=self.headers)
         print('Создание папки на Yandex Disk.')
         res = requests.put(self.url, headers=self.headers, params={"path": folder})
     
-        for files in os.listdir('TMP'):
+        for files in os.listdir('VK_TMP'):
             headers = {"Authorization": self.token}
             params = {"path": folder + '/' + files, 'overwrite':True}
             resp = requests.get(self.url + '/upload', headers=headers, params=params)
 
-            with open('TMP/' + files, 'rb') as f:
+            with open('VK_TMP/' + files, 'rb') as f:
                 print('Загрузка файла:', files)
                 response = requests.post(resp.json()['href'], files={"file": f})
                 if response.status_code == 201:
@@ -143,10 +167,11 @@ if __name__ == '__main__':
 
     YD_API_URL = 'https://cloud-api.yandex.net/v1/disk/resources'
 
-    YD_token = ''
+    YD_token = 'AQAAAABewBoFAADLW-SEUZ3sE07CsV2Xgo43Fdo'
 
     vka = VKPhotosDownloader(VK_API_URL, VK_token, VK_api_version)
     vka.get_photos(VK_user_id, album, photos_quantity)
     yd = YaDiskUpLoader(YD_API_URL, YD_token)
     yd.load_to_ydisk(folder_name)
+    delete_tmp_dir()
    
