@@ -133,6 +133,7 @@ class YaDiskUpLoader(APIClient):
         res = requests.get(self.url, headers=self.headers)
         print('Создание папки на Yandex Disk.')
         res = requests.put(self.url, headers=self.headers, params={"path": folder})
+        res = _check_errors(res)
     
         for files in os.listdir('VK_TMP'):
             headers = {"Authorization": self.token}
@@ -147,6 +148,32 @@ class YaDiskUpLoader(APIClient):
                 else:
                     print('Файл не загружен.')
 
+def is_integer(variable: str) -> int:
+    '''Функция проверяет является ли объект ввода целым положительным числом
+    '''
+    try:
+        int(variable)
+        return int(variable)
+    except ValueError:
+        variable = input('Ошибка! Введите целое положительное число: ')
+        is_integer(variable)
+
+
+def main():
+    VK_api_version = '5.131'
+    VK_API_URL = 'https://api.vk.com/method'
+    YD_API_URL = 'https://cloud-api.yandex.net/v1/disk/resources'
+    
+    VK_token = str(input('Введите токен для доступа VK: '))
+    YD_token = str(input('Введите токен для доступа Yandex Disk: '))
+    
+    _VK_user_id = int(input('Введите ID пользователя VK: '))
+    VK_user_id = is_integer(_VK_user_id)
+    _photos_quantity = int(input('Введите количество фотографий: '))
+    photos_quantity = is_integer(_photos_quantity)
+
+    
+
 if __name__ == '__main__':
     # Переменная folder_name задаваемая при старте программы будет использоваться при создании имен папок для хранения фотографий
     # Будут использованы в том числе секунды, что позволит избежать конфликтов с одинаковыми названиями папок и написания кода
@@ -154,8 +181,8 @@ if __name__ == '__main__':
     folder_name = datetime.now().strftime("%d-%m-%y_%H-%M-%S")
 
     VK_token = '958eb5d439726565e9333aa30e50e0f937ee432e927f0dbd541c541887d919a7c56f95c04217915c32008'
-    Yandex_token = ''
     Google_token = ''
+    YD_token = ''
 
     VK_api_version = '5.131'
 
@@ -167,7 +194,6 @@ if __name__ == '__main__':
 
     YD_API_URL = 'https://cloud-api.yandex.net/v1/disk/resources'
 
-    YD_token = 'AQAAAABewBoFAADLW-SEUZ3sE07CsV2Xgo43Fdo'
 
     vka = VKPhotosDownloader(VK_API_URL, VK_token, VK_api_version)
     vka.get_photos(VK_user_id, album, photos_quantity)
