@@ -3,8 +3,8 @@ from datetime import datetime
 import json
 import os
 import sys
-
-from pprint import pprint
+from tqdm import tqdm
+from time import sleep
 
 class APIClient(object):
     """
@@ -46,7 +46,7 @@ def _check_errors(res):
     return res
 
 def clear_tmp():
-    '''Функция проверяет есть ли директория с именем VK_TMP,
+    '''Функция проверяет есть ли локальная директория с именем VK_TMP,
     для временнего хранения скачанных файлов. Если директории нет, создает ее,
     если директория существует - удаляет ее содержимое.
     '''
@@ -135,7 +135,7 @@ class YaDiskUpLoader(APIClient):
         res = requests.put(self.url, headers=self.headers, params={"path": folder})
         res = _check_errors(res)
     
-        for files in os.listdir('VK_TMP'):
+        for files in tqdm(os.listdir('VK_TMP'), desc='Progess:'):
             headers = {"Authorization": self.token}
             params = {"path": folder + '/' + files, 'overwrite':True}
             resp = requests.get(self.url + '/upload', headers=headers, params=params)
@@ -147,6 +147,7 @@ class YaDiskUpLoader(APIClient):
                     print('Файл успешно загружен.')
                 else:
                     print('Файл не загружен.')
+            sleep(.1)
 
 def is_integer(variable: str) -> int:
     '''Функция проверяет является ли объект ввода целым положительным числом
@@ -183,7 +184,6 @@ def main():
     yd = YaDiskUpLoader(YD_API_URL, YD_token)
     yd.load_to_ydisk(folder_name)
     delete_tmp_dir()
-
 
 if __name__ == '__main__':
     main()
