@@ -160,6 +160,11 @@ def is_integer(variable: str) -> int:
 
 
 def main():
+    ''' Базовая функция. Переменная folder_name задаваемая при старте программы используется при создании имени
+    директории для хранения фотографий на YD,
+    Время с секундами позволит избежать конфликтов с одинаковыми названиями и написания кодадля проверки имен.
+    '''
+    folder_name = datetime.now().strftime("%d-%m-%y_%H-%M-%S")
     VK_api_version = '5.131'
     VK_API_URL = 'https://api.vk.com/method'
     YD_API_URL = 'https://cloud-api.yandex.net/v1/disk/resources'
@@ -167,37 +172,19 @@ def main():
     VK_token = str(input('Введите токен для доступа VK: '))
     YD_token = str(input('Введите токен для доступа Yandex Disk: '))
     
-    _VK_user_id = int(input('Введите ID пользователя VK: '))
+    _VK_user_id = input('Введите ID пользователя VK: ')
     VK_user_id = is_integer(_VK_user_id)
-    _photos_quantity = int(input('Введите количество фотографий: '))
+    _photos_quantity = input('Введите количество фотографий: ')
     photos_quantity = is_integer(_photos_quantity)
-
-    
-
-if __name__ == '__main__':
-    # Переменная folder_name задаваемая при старте программы будет использоваться при создании имен папок для хранения фотографий
-    # Будут использованы в том числе секунды, что позволит избежать конфликтов с одинаковыми названиями папок и написания кода
-    # для проверки имен.
-    folder_name = datetime.now().strftime("%d-%m-%y_%H-%M-%S")
-
-    VK_token = '958eb5d439726565e9333aa30e50e0f937ee432e927f0dbd541c541887d919a7c56f95c04217915c32008'
-    Google_token = ''
-    YD_token = ''
-
-    VK_api_version = '5.131'
-
-    VK_user_id = '1'
-    photos_quantity = '4'
     album = 'profile'
-
-    VK_API_URL = 'https://api.vk.com/method'
-
-    YD_API_URL = 'https://cloud-api.yandex.net/v1/disk/resources'
-
-
+    
     vka = VKPhotosDownloader(VK_API_URL, VK_token, VK_api_version)
     vka.get_photos(VK_user_id, album, photos_quantity)
     yd = YaDiskUpLoader(YD_API_URL, YD_token)
     yd.load_to_ydisk(folder_name)
     delete_tmp_dir()
+
+
+if __name__ == '__main__':
+    main()
    
